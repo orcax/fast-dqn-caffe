@@ -326,7 +326,6 @@ message LayerParameter {
   // Specifies on which bottoms the backpropagation should be skipped.
   // The size must be either 0 or equal to the number of bottoms.
   repeated bool propagate_down = 11;
-  repeated float clip_gradients = 12;
 
   // Rules controlling whether and when a layer is included in the network,
   // based on the current NetState.  You may specify a non-zero number of rules
@@ -386,73 +385,7 @@ message LayerParameter {
   optional ThresholdParameter threshold_param = 128;
   optional TileParameter tile_param = 138;
   optional WindowDataParameter window_data_param = 129;
-
-  // Added by Jun
-  optional AtariDataParameter atari_data_param = 201;
-  optional RecurrentParameter recurrent_param = 202;
-  // Added by Yikun
-  optional A4DataParameter a4_data_param = 203;
-  optional JointModelDataParameter joint_model_data_param = 204;
 }
-
-// Added by Jun
-//--------------------------------------------------------------------------------
-message AtariDataParameter {
-  optional uint32 num_frame = 1; // The number of frames for input
-  optional uint32 num_act = 2; // The number of actions
-  optional uint32 channels = 3 [default = 1]; // number of channels in image 
-  optional bool streaming = 4 [default = false]; // change T times N to N times T for RNN
-  optional bool out_clip = 5 [default = false]; // load every image to memory
-  optional bool load_to_memory = 6 [default = true]; // load every image to memory
-  optional bool out_act = 7 [default = true];
-}
-//--------------------------------------------------------------------------------
-
-// Added by Yikun
-//--------------------------------------------------------------------------------
-message A4DataParameter {
-  optional uint32 num_frame = 1; // The number of frames for input
-  optional uint32 num_act = 2; // The number of actions
-  optional uint32 channels = 3 [default = 1]; // number of channels in image 
-  optional bool streaming = 4 [default = false]; // false=[T x N], true=[N x T] for RNN
-  optional bool load_to_memory = 5 [default = false]; // load every image to memory
-  optional bool out_clip = 6 [default = false]; // LSTM parameter
-  optional bool out_act = 7 [default = true];
-  optional bool out_nextframe = 12 [default = true];
-  optional bool out_reward = 8 [default = false];
-  optional bool out_life = 9 [default = false];
-  optional float scaled_reward = 10 [default = 1];
-  optional float scaled_life = 11 [default = 1];
-  optional bool resize_image = 13 [default = false];
-  optional uint32 resize_height = 14 [default = 210];
-  optional uint32 resize_width = 15 [default = 160];
-}
-
-message JointModelDataParameter {
-  optional uint32 num_frame = 1 [default = 5]; // The number of frames for input
-  optional uint32 num_act = 2 [default = 18]; // The number of actions
-  optional uint32 channels = 3 [default = 1]; // number of channels in image 
-  //optional bool streaming = 4 [default = false]; // false=[T x N], true=[N x T] for RNN
-  optional bool load_to_mem = 5 [default = false]; // load every image to memory
-  //optional bool out_clip = 6 [default = false]; // LSTM parameter
-  optional bool out_act = 7 [default = true];
-  //optional bool out_nextframe = 12 [default = true];
-  optional bool out_reward = 8 [default = true];
-  optional bool out_value = 9 [default = false];
-  //optional bool out_life = 10 [default = false];
-  optional bool resize_image = 13 [default = false];
-  optional uint32 resize_height = 14 [default = 84];
-  optional uint32 resize_width = 15 [default = 84];
-  optional float reward_scale = 20 [default = 1];
-  // reward_form: either 0 or 1
-  // 0-form: batch_size x num_act
-  // 1-form: batch_size x 3 
-  optional uint32 reward_form = 21 [default = 0]; 
-  optional uint32 value_form = 22 [default = 0];
-  optional float value_scale = 23 [default = 1];
-  //optional float scaled_life = 30 [default = 1];
-}
-//--------------------------------------------------------------------------------
 
 // Message that stores parameters used to apply transformation
 // to the data layer's data
@@ -504,12 +437,6 @@ message AccuracyParameter {
 
   // If specified, ignore instances with the given label.
   optional int32 ignore_label = 3;
-
-  // Controls the denominator in the computed accuracy = #correct / denominator.
-  // Must be a positive number, or the default of 0, for the total input weight.
-  // If no input weights are used, the denominator is the batch size, as the
-  // weights each default to 1.
-  optional float denominator = 4 [default = 0];
 }
 
 message ArgMaxParameter {
@@ -659,10 +586,6 @@ message EltwiseParameter {
   // Whether to use an asymptotically slower (for >2 inputs) but stabler method
   // of computing the gradient for the PROD operation. (No effect for SUM op.)
   optional bool stable_prod_grad = 3 [default = true];
-
-  // If true and the EltwiseOp is SUM, the last bottom blob is a singleton
-  // coefficient for the first N-1 bottom blobs, with shape (N-1, 1, 1, 1).
-  optional bool coeff_blob = 4 [default = false];
 }
 
 // Message that stores parameters used by EmbedLayer
@@ -714,7 +637,6 @@ message HDF5DataParameter {
   // but data between different files are not interleaved; all of a file's
   // data are output (in a random order) before moving onto another file.
   optional bool shuffle = 3 [default = false];
-  optional uint32 axis = 4 [default = 0];
 }
 
 message HDF5OutputParameter {
@@ -867,19 +789,6 @@ message PythonParameter {
   // If true, each worker solver sequentially run forward from this layer.
   // This value should be set true if you are using it as a data layer.
   optional bool share_in_parallel = 4 [default = false];
-}
-
-// Message that stores parameters used by RecurrentLayer
-message RecurrentParameter {
-  // The dimension of the output (and usually hidden state) representation --
-  // must be explicitly set to non-zero.
-  optional uint32 num_output = 1 [default = 0];
-
-  optional FillerParameter weight_filler = 2; // The filler for the weight
-  optional FillerParameter bias_filler = 3; // The filler for the bias
-
-  // Whether to enable displaying debug_info in the unrolled recurrent net.
-  optional bool debug_info = 4 [default = false];
 }
 
 // Message that stores parameters used by ReductionLayer

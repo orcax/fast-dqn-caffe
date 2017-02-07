@@ -1,3 +1,0 @@
-/home/yikun/Workspaces/fast-dqn-caffe/xitari/CMakeFiles/ale.dir
-/home/yikun/Workspaces/fast-dqn-caffe/xitari/CMakeFiles/xitari.dir
-/home/yikun/Workspaces/fast-dqn-caffe/xitari/CMakeFiles/xitari_shared.dir

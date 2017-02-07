@@ -558,27 +558,6 @@ class SigmoidLayer : public NeuronLayer<Dtype> {
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 };
 
-/**
- * @brief Bernoulli sampling function 
- * Note that the bottom blob should be [0, 1].
- */
-template <typename Dtype>
-class BernoulliLayer : public NeuronLayer<Dtype> {
- public:
-  explicit BernoulliLayer(const LayerParameter& param)
-      : NeuronLayer<Dtype>(param) {}
-
-  virtual inline const char* type() const { return "Bernoulli"; }
-
- protected:
-
-  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top);
-  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
-      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
-};
-
-
 #ifdef USE_CUDNN
 /**
  * @brief CuDNN acceleration of SigmoidLayer.

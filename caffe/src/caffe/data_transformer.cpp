@@ -276,10 +276,6 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   if (crop_size) {
     CHECK_EQ(crop_size, height);
     CHECK_EQ(crop_size, width);
-    if (h_off < 0 || w_off < 0) {
-      h_off = Rand(height - crop_size + 1);
-      w_off = Rand(width - crop_size + 1);
-    }
     // We only do random crop when we do training.
     if (phase_ == TRAIN) {
       h_off = Rand(img_height - crop_size + 1);

@@ -490,29 +490,12 @@ template <typename Dtype>
 inline void Layer<Dtype>::Backward(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down,
     const vector<Blob<Dtype>*>& bottom) {
-  const int clip_gradients_size = this->layer_param_.clip_gradients_size();
   switch (Caffe::mode()) {
   case Caffe::CPU:
     Backward_cpu(top, propagate_down, bottom);
-    for (int bottom_id = 0; bottom_id < clip_gradients_size; ++bottom_id) {
-      const Dtype threshold = this->layer_param_.clip_gradients(bottom_id);
-      if (threshold > Dtype(0)) {
-        const int count = bottom[bottom_id]->count();
-        Dtype* diff = bottom[bottom_id]->mutable_cpu_diff();
-        caffe_bound(count, diff, -threshold, threshold, diff);
-      }
-    }
     break;
   case Caffe::GPU:
     Backward_gpu(top, propagate_down, bottom);
-    for (int bottom_id = 0; bottom_id < clip_gradients_size; ++bottom_id) {
-      const Dtype threshold = this->layer_param_.clip_gradients(bottom_id);
-      if (threshold > Dtype(0)) {
-        const int count = bottom[bottom_id]->count();
-        Dtype* diff = bottom[bottom_id]->mutable_gpu_diff();
-        caffe_gpu_bound(count, diff, -threshold, threshold, diff);
-      }
-    }
     break;
   default:
     LOG(FATAL) << "Unknown caffe mode.";

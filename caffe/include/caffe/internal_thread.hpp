@@ -32,7 +32,7 @@ class InternalThread {
   void StopInternalThread();
 
   bool is_started() const;
-  bool WaitForInternalThreadToExit(); 
+
  protected:
   /* Implement this method in your subclass
       with the code you want your thread to run. */

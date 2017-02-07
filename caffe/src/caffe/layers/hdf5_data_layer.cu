@@ -40,25 +40,11 @@ void HDF5DataLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
         std::random_shuffle(data_permutation_.begin(), data_permutation_.end());
     }
     for (int j = 0; j < this->layer_param_.top_size(); ++j) {
-      int slice_dim = top[j]->count() / top[j]->count(0, axis_ + 1);
-      int top_row_dim = top[j]->count(axis_);
-      int hdf_row_dim = hdf_blobs_[j]->count(axis_);
-      int rows = top[j]->count(0, axis_);
-      for (int k = 0; k < rows; ++k) {
-        caffe_copy(slice_dim,
-            &hdf_blobs_[j]->cpu_data()[k * hdf_row_dim +
-              data_permutation_[current_row_] * slice_dim], 
-            &top[j]->mutable_gpu_data()[k * top_row_dim + i * slice_dim]);
-      }
-    }
-    /*
-    for (int j = 0; j < this->layer_param_.top_size(); ++j) {
       int data_dim = top[j]->count() / top[j]->shape(0);
       caffe_copy(data_dim,
           &hdf_blobs_[j]->cpu_data()[data_permutation_[current_row_]
             * data_dim], &top[j]->mutable_gpu_data()[i * data_dim]);
     }
-    */
   }
 }
 

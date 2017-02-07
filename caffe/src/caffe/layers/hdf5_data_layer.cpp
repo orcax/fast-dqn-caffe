@@ -49,23 +49,23 @@ void HDF5DataLayer<Dtype>::LoadHDF5FileData(const char* filename) {
 
   // MinTopBlobs==1 guarantees at least one top blob
   CHECK_GE(hdf_blobs_[0]->num_axes(), 1) << "Input must have at least 1 axis.";
-  const int num = hdf_blobs_[0]->shape(axis_);
+  const int num = hdf_blobs_[0]->shape(0);
   for (int i = 1; i < top_size; ++i) {
-    CHECK_EQ(hdf_blobs_[i]->shape(axis_), num);
+    CHECK_EQ(hdf_blobs_[i]->shape(0), num);
   }
   // Default to identity permutation.
   data_permutation_.clear();
-  data_permutation_.resize(hdf_blobs_[0]->shape(axis_));
-  for (int i = 0; i < hdf_blobs_[0]->shape(axis_); i++)
+  data_permutation_.resize(hdf_blobs_[0]->shape(0));
+  for (int i = 0; i < hdf_blobs_[0]->shape(0); i++)
     data_permutation_[i] = i;
 
   // Shuffle if needed.
   if (this->layer_param_.hdf5_data_param().shuffle()) {
     std::random_shuffle(data_permutation_.begin(), data_permutation_.end());
-    DLOG(INFO) << "Successully loaded " << hdf_blobs_[0]->shape(axis_)
+    DLOG(INFO) << "Successully loaded " << hdf_blobs_[0]->shape(0)
                << " rows (shuffled)";
   } else {
-    DLOG(INFO) << "Successully loaded " << hdf_blobs_[0]->shape(axis_) << " rows";
+    DLOG(INFO) << "Successully loaded " << hdf_blobs_[0]->shape(0) << " rows";
   }
 }
 
@@ -77,7 +77,6 @@ void HDF5DataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       this->type() << " does not transform data.";
   // Read the source to parse the filenames.
   const string& source = this->layer_param_.hdf5_data_param().source();
-  axis_ = this->layer_param_.hdf5_data_param().axis();
   LOG(INFO) << "Loading list of HDF5 filenames from: " << source;
   hdf_filenames_.clear();
   std::ifstream source_file(source.c_str());
@@ -118,8 +117,9 @@ void HDF5DataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   vector<int> top_shape;
   for (int i = 0; i < top_size; ++i) {
     top_shape.resize(hdf_blobs_[i]->num_axes());
-    for (int j = 0; j < top_shape.size(); ++j) {
-      top_shape[j] = j == axis_ ? batch_size : hdf_blobs_[i]->shape(j);
+    top_shape[0] = batch_size;
+    for (int j = 1; j < top_shape.size(); ++j) {
+      top_shape[j] = hdf_blobs_[i]->shape(j);
     }
     top[i]->Reshape(top_shape);
   }
@@ -149,16 +149,10 @@ void HDF5DataLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
         std::random_shuffle(data_permutation_.begin(), data_permutation_.end());
     }
     for (int j = 0; j < this->layer_param_.top_size(); ++j) {
-      int slice_dim = top[j]->count() / top[j]->count(0, axis_ + 1);
-      int top_row_dim = top[j]->count(axis_);
-      int hdf_row_dim = hdf_blobs_[j]->count(axis_);
-      int rows = top[j]->count(0, axis_);
-      for (int k = 0; k < rows; ++k) {
-        caffe_copy(slice_dim,
-            &hdf_blobs_[j]->cpu_data()[k * hdf_row_dim +
-              data_permutation_[current_row_] * slice_dim], 
-            &top[j]->mutable_cpu_data()[k * top_row_dim + i * slice_dim]);
-      }
+      int data_dim = top[j]->count() / top[j]->shape(0);
+      caffe_copy(data_dim,
+          &hdf_blobs_[j]->cpu_data()[data_permutation_[current_row_]
+            * data_dim], &top[j]->mutable_cpu_data()[i * data_dim]);
     }
   }
 }

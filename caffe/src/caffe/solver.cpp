@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
 
 #include "hdf5.h"
 #include "hdf5_hl.h"
@@ -112,7 +110,6 @@ void Solver<Dtype>::InitTrainNet() {
   if (Caffe::root_solver()) {
     net_.reset(new Net<Dtype>(net_param));
   } else {
-    CHECK_NOTNULL(root_solver_->net_.get());
     net_.reset(new Net<Dtype>(net_param, root_solver_->net_.get()));
   }
 }
@@ -192,7 +189,6 @@ void Solver<Dtype>::InitTestNets() {
     if (Caffe::root_solver()) {
       test_nets_[i].reset(new Net<Dtype>(net_params[i]));
     } else {
-      CHECK_NOTNULL(root_solver_->test_nets_[i].get());
       test_nets_[i].reset(new Net<Dtype>(net_params[i],
           root_solver_->test_nets_[i].get()));
     }
@@ -246,12 +242,6 @@ void Solver<Dtype>::Step(int iters) {
     if (display) {
       LOG_IF(INFO, Caffe::root_solver()) << "Iteration " << iter_
           << ", loss = " << smoothed_loss;
-      std::ofstream log_file;
-      if (Caffe::root_solver()) {
-        string log_filename(param_.snapshot_prefix() + "_train.log");
-        log_file.open(log_filename.c_str(), std::fstream::app);
-        log_file << iter_;
-      }
       const vector<Blob<Dtype>*>& result = net_->output_blobs();
       int score_index = 0;
       for (int j = 0; j < result.size(); ++j) {
@@ -269,13 +259,7 @@ void Solver<Dtype>::Step(int iters) {
           LOG_IF(INFO, Caffe::root_solver()) << "    Train net output #"
               << score_index++ << ": " << output_name << " = "
               << result_vec[k] << loss_msg_stream.str();
-          if (Caffe::root_solver()) {
-            log_file << " " << result_vec[k];
-          }
         }
-      }
-      if (Caffe::root_solver()) {
-        log_file << std::endl;
       }
     }
     for (int i = 0; i < callbacks_.size(); ++i) {
@@ -417,19 +401,6 @@ void Solver<Dtype>::Test(const int test_net_id) {
     loss /= param_.test_iter(test_net_id);
     LOG(INFO) << "Test loss: " << loss;
   }
-
-  char buf[100];
-  if (test_nets_.size() > 1) {
-    snprintf(buf, sizeof(buf), "%s_test_%d.log", 
-     param_.snapshot_prefix().c_str(), test_net_id);
-  }
-  else {
-    snprintf(buf, sizeof(buf), "%s_test.log", param_.snapshot_prefix().c_str());
-  }
-  std::ofstream log_file;
-  log_file.open(buf, std::fstream::app);
-  log_file << iter_;
-
   for (int i = 0; i < test_score.size(); ++i) {
     const int output_blob_index =
         test_net->output_blob_indices()[test_score_output_id[i]];
@@ -443,9 +414,7 @@ void Solver<Dtype>::Test(const int test_net_id) {
     }
     LOG(INFO) << "    Test net output #" << i << ": " << output_name << " = "
               << mean_score << loss_msg_stream.str();
-    log_file << " " << mean_score;
   }
-  log_file << std::endl;
 }
 
 template <typename Dtype>

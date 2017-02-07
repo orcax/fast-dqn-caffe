@@ -280,24 +280,6 @@ caffe/syncedmem.hpp
 caffe/util/blocking_queue.hpp
 ./caffe/include/caffe/caffe/util/blocking_queue.hpp
 
-./caffe/include/caffe/proto/caffe.pb.h
-string
--
-google/protobuf/stubs/common.h
--
-google/protobuf/generated_message_util.h
--
-google/protobuf/message.h
--
-google/protobuf/repeated_field.h
--
-google/protobuf/extension_set.h
--
-google/protobuf/generated_enum_reflection.h
--
-google/protobuf/unknown_field_set.h
--
-
 ./caffe/include/caffe/solver.hpp
 boost/function.hpp
 -

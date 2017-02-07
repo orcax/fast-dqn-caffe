@@ -170,7 +170,7 @@ ifneq ($(CPU_ONLY), 1)
 	LIBRARIES := cudart cublas curand
 endif
 
-LIBRARIES += glog gflags protobuf boost_system m hdf5_hl hdf5 boost_filesystem
+LIBRARIES += glog gflags protobuf boost_system m hdf5_hl hdf5
 
 # handle IO dependencies
 USE_LEVELDB ?= 1
@@ -185,10 +185,6 @@ ifeq ($(USE_LMDB), 1)
 endif
 ifeq ($(USE_OPENCV), 1)
 	LIBRARIES += opencv_core opencv_highgui opencv_imgproc
-
-	ifeq ($(OPENCV_VERSION), 3)
-		LIBRARIES += opencv_imgcodecs
-	endif
 endif
 PYTHON_LIBRARIES := boost_python python2.7
 WARNINGS := -Wall -Wno-sign-compare

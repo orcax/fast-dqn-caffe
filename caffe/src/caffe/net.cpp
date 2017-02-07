@@ -38,8 +38,8 @@ Net<Dtype>::Net(const string& param_file, Phase phase, const Net* root_net)
 
 template <typename Dtype>
 void Net<Dtype>::Init(const NetParameter& in_param) {
-  //CHECK(Caffe::root_solver() || root_net_)
-  //    << "root_net_ needs to be set for all non-root solvers";
+  CHECK(Caffe::root_solver() || root_net_)
+      << "root_net_ needs to be set for all non-root solvers";
   // Set phase from the state.
   phase_ = in_param.state().phase();
   // Filter layers based on their include/exclude rules and
@@ -82,11 +82,9 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
   param_id_vecs_.resize(param.layer_size());
   top_id_vecs_.resize(param.layer_size());
   bottom_need_backward_.resize(param.layer_size());
-  int num_total_params = 0;
   for (int layer_id = 0; layer_id < param.layer_size(); ++layer_id) {
-    int num_params = 0;
     // For non-root solvers, whether this layer is shared from root_net_.
-    bool share_from_root = !Caffe::root_solver() && root_net_
+    bool share_from_root = !Caffe::root_solver()
         && root_net_->layers_[layer_id]->ShareInParallel();
     // Inherit phase from net if unset.
     if (!param.layer(layer_id).has_phase()) {
@@ -98,12 +96,6 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
       CHECK_EQ(layer_param.propagate_down_size(),
           layer_param.bottom_size())
           << "propagate_down param must be specified "
-          << "either 0 or bottom_size times ";
-    }
-    if (layer_param.clip_gradients_size() > 0) {
-      CHECK_EQ(layer_param.clip_gradients_size(),
-          layer_param.bottom_size())
-          << "clip_gradients param must be specified "
           << "either 0 or bottom_size times ";
     }
     if (share_from_root) {
@@ -197,11 +189,6 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
     }
     for (int param_id = 0; param_id < num_param_blobs; ++param_id) {
       AppendParam(param, layer_id, param_id);
-      num_params += layers_[layer_id]->blobs()[param_id]->count();
-    }
-    LOG(INFO) << "Num of parameters : " << num_params;
-    if (num_params > 0 && param_owners_.back() == -1) {
-      num_total_params += num_params;
     }
     // Finally, set the backward flag
     layer_need_backward_.push_back(need_backward);
@@ -304,13 +291,11 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
   for (size_t layer_id = 0; layer_id < layer_names_.size(); ++layer_id) {
     layer_names_index_[layer_names_[layer_id]] = layer_id;
   }
-  // GetLearningRateAndWeightDecay();
   ShareWeights();
   debug_info_ = param.debug_info();
   if (Caffe::root_solver()) {
     LOG(INFO) << "Network initialization done.";
     LOG(INFO) << "Memory required for data: " << memory_used_ * sizeof(Dtype);
-    LOG(INFO) << "Num of total parameters : " << num_total_params;
   }
 }
 
@@ -599,24 +584,6 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
   }
 }
 
-/*
-template <typename Dtype>
-void Net<Dtype>::GetLearningRateAndWeightDecay() {
-  LOG(INFO) << "Collecting Learning Rate and Weight Decay.";
-  ParamSpec default_param_spec;
-  for (int i = 0; i < layers_.size(); ++i) {
-    vector<shared_ptr<Blob<Dtype> > >& layer_blobs = layers_[i]->blobs();
-    for (int j = 0; j < layer_blobs.size(); ++j) {
-      const ParamSpec* param_spec =
-          (layers_[i]->layer_param().param_size() > j) ?
-          &layers_[i]->layer_param().param(j) : &default_param_spec;
-      params_lr_.push_back(param_spec->lr_mult());
-      params_weight_decay_.push_back(param_spec->decay_mult());
-    }
-  }
-}
-*/
-
 template <typename Dtype>
 Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
   CHECK_GE(start, 0);
@@ -876,7 +843,7 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
       ++target_layer_id;
     }
     if (target_layer_id == layer_names_.size()) {
-      LOG(INFO) << "Ignoring source layer " << source_layer_name;
+      DLOG(INFO) << "Ignoring source layer " << source_layer_name;
       continue;
     }
     DLOG(INFO) << "Copying source layer " << source_layer_name;
@@ -884,9 +851,6 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
         layers_[target_layer_id]->blobs();
     CHECK_EQ(target_blobs.size(), source_layer.blobs_size())
         << "Incompatible number of blobs for layer " << source_layer_name;
-    if (target_blobs.size()) {
-      LOG(INFO) << "Copying source layer " << source_layer_name;
-    }
     for (int j = 0; j < target_blobs.size(); ++j) {
       if (!target_blobs[j]->ShapeEquals(source_layer.blobs(j))) {
         Blob<Dtype> source_blob;
@@ -933,26 +897,20 @@ void Net<Dtype>::CopyTrainedLayersFromHDF5(const string trained_filename) {
   int num_layers = hdf5_get_num_links(data_hid);
   for (int i = 0; i < num_layers; ++i) {
     string source_layer_name = hdf5_get_name_by_idx(data_hid, i);
+    if (!layer_names_index_.count(source_layer_name)) {
+      DLOG(INFO) << "Ignoring source layer " << source_layer_name;
+      continue;
+    }
+    int target_layer_id = layer_names_index_[source_layer_name];
+    DLOG(INFO) << "Copying source layer " << source_layer_name;
+    vector<shared_ptr<Blob<Dtype> > >& target_blobs =
+        layers_[target_layer_id]->blobs();
     hid_t layer_hid = H5Gopen2(data_hid, source_layer_name.c_str(),
         H5P_DEFAULT);
     CHECK_GE(layer_hid, 0)
         << "Error reading weights from " << trained_filename;
     // Check that source layer doesn't have more params than target layer
     int num_source_params = hdf5_get_num_links(layer_hid);
-    if (num_source_params == 0) {
-      continue;
-    }
-    if (!layer_names_index_.count(source_layer_name)) {
-      LOG(INFO) << "Ignoring source layer " << source_layer_name;
-      continue;
-    }
-    int target_layer_id = layer_names_index_[source_layer_name];
-    vector<shared_ptr<Blob<Dtype> > >& target_blobs =
-        layers_[target_layer_id]->blobs();
-    if (target_blobs.size()) {
-      LOG(INFO) << "Copying source layer " << source_layer_name;
-    }
-    // Check that source layer doesn't have more params than target layer
     CHECK_LE(num_source_params, target_blobs.size())
         << "Incompatible number of blobs for layer " << source_layer_name;
     for (int j = 0; j < target_blobs.size(); ++j) {

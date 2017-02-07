@@ -96,15 +96,6 @@ class Top(object):
     def _to_proto(self, layers, names, autonames):
         return self.fn._to_proto(layers, names, autonames)
 
-class Input(object):
-    """A Function specifies a single input blob."""
-    def __init__(self, name, shape):
-        self.name = name
-        self.shape = caffe_pb2.BlobShape() 
-        self.shape.dim.extend(shape)
-    def _to_proto(self, inputs, input_shapes):
-        inputs = inputs.append(self.name)
-        input_shapes = input_shapes.append(self.shape)
 
 class Function(object):
     """A Function specifies a layer, its parameters, and its inputs (which
@@ -142,11 +133,8 @@ class Function(object):
             return
         bottom_names = []
         for inp in self.inputs:
-            if type(inp) is Input:
-              bottom_names.append(inp.name)
-            else:
-              inp._to_proto(layers, names, autonames)
-              bottom_names.append(layers[inp.fn].top[inp.n])
+            inp._to_proto(layers, names, autonames)
+            bottom_names.append(layers[inp.fn].top[inp.n])
         layer = caffe_pb2.LayerParameter()
         layer.type = self.type_name
         layer.bottom.extend(bottom_names)
@@ -186,22 +174,14 @@ class NetSpec(object):
 
     def __getattr__(self, name):
         return self.tops[name]
-    
+
     def to_proto(self):
         names = {v: k for k, v in six.iteritems(self.tops)}
         autonames = Counter()
         layers = OrderedDict()
-        inputs = []
-        input_shapes = []
         for name, top in six.iteritems(self.tops):
-            if type(top) is Input:
-              top._to_proto(inputs, input_shapes)
-            else:
-              top._to_proto(layers, names, autonames)
+            top._to_proto(layers, names, autonames)
         net = caffe_pb2.NetParameter()
-        if len(inputs) > 0:
-          net.input.extend(inputs)
-          net.input_shape.extend(input_shapes)
         net.layer.extend(layers.values())
         return net
 
