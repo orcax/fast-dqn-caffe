@@ -11,7 +11,7 @@
 DEFINE_bool(verbose, false, "verbose output");
 DEFINE_bool(gpu, true, "Use GPU to brew Caffe");
 DEFINE_bool(gui, false, "Open a GUI window");
-DEFINE_string(rom, "breakout.bin", "Atari 2600 ROM to play");
+DEFINE_string(rom, "roms/breakout.bin", "Atari 2600 ROM to play");
 DEFINE_string(solver, "models/fast_dqn_solver.prototxt", "Solver parameter"
   "file (*.prototxt)");
 DEFINE_int32(memory, 500000, "Capacity of replay memory");
