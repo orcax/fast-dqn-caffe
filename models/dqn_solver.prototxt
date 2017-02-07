@@ -1,6 +1,6 @@
 net: "models/dqn.prototxt"
 solver_type: RMSPROP
-base_lr: 0.000251
+base_lr: 0.00025
 rms_decay: 0.95
 delta: 0.1
 lr_policy: "fixed"
@@ -10,7 +10,7 @@ display: 10000
 # you should only see a lot of clip message a the beginning of training
 # for about a second, otherwise occasionally you'll see some if things
 # are working
-clip_gradients: 10
+clip_gradients: 1000
 
 # snapshot intermediate results
 snapshot: 100000
