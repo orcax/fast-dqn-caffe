@@ -92,6 +92,12 @@ double PlayOneEpisode(
         if (dqn->memory_size() > FLAGS_memory_threshold) {
           dqn->Update();
         }
+
+        // only for test !!!!!
+        //fast_dqn::Environment::FrameDataSp fds = environmentSp->PreprocessScreen();
+        //std::stringstream ss;
+        //ss << "data/" + std::to_string(frame) << ".jpg";
+        //fast_dqn::SaveCroppedImage(fds, ss.str());
       }
     }
   }

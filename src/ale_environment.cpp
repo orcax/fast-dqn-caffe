@@ -1,6 +1,5 @@
 #include "environment.h"
-#include <ale_interface.hpp>
-#include <ale_interface.hpp>
+#include "ale_interface.hpp"
 #include <glog/logging.h>
 #include <iostream>
 #include <vector>
@@ -32,6 +31,7 @@ public:
     const auto y_ratio = rawFrameHeight / static_cast<double>(kCroppedFrameSize);
     for (auto i = 0; i < kCroppedFrameSize; ++i) {
       for (auto j = 0; j < kCroppedFrameSize; ++j) {
+        // for each pixel in new frame, find corresponding region in old one
         const auto first_x = static_cast<int>(std::floor(j * x_ratio));
         const auto last_x = static_cast<int>(std::floor((j + 1) * x_ratio));
         const auto first_y = static_cast<int>(std::floor(i * y_ratio));
@@ -72,6 +72,7 @@ public:
         (*screen)[i * kCroppedFrameSize + j] = resulting_color;
       }
     }
+    std::cout << std::endl;
     return screen;
   }
 
@@ -117,6 +118,22 @@ public:
 EnvironmentSp CreateEnvironment(
     bool gui, const std::string rom_path) {
   return std::make_shared<ALEEnvironment>(gui, rom_path);
+}
+
+void SaveCroppedImage(Environment::FrameDataSp fds, std::string filename) {
+  std::cout << "Saving " << filename << std::endl;
+  const int height = Environment::kCroppedFrameSize, width = Environment::kCroppedFrameSize;
+  const int size = height * width;
+  CHECK_EQ(size, fds->size());
+  cv::Mat gray_image(height, width, CV_32FC1);
+  for(int i=0;i<size;++i) {
+    int row = i / width, col = i % width;
+    float gray = fds->at(i);// / 255.0;
+    std::cout << gray << " ";
+    gray_image.at<float>(row, col) = gray;
+  }
+  std::cout << std::endl;
+  cv::imwrite(filename, gray_image);
 }
 
 }  // namespace fast_dqn

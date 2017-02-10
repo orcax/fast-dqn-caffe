@@ -61,6 +61,7 @@ CMakeFiles/fast_dqn.dir/src/fast_dqn.cpp.o
  ./caffe/include/caffe/net.hpp
  ./caffe/include/caffe/neuron_layers.hpp
  ./caffe/include/caffe/parallel.hpp
+ ./caffe/include/caffe/proto/caffe.pb.h
  ./caffe/include/caffe/solver.hpp
  ./caffe/include/caffe/syncedmem.hpp
  ./caffe/include/caffe/util/benchmark.hpp
