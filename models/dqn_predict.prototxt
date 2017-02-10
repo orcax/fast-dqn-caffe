@@ -1,0 +1,187 @@
+name: "Deep Q-Network"
+
+input: "frames"
+input: "act"
+input_shape {
+  dim: 1
+  dim: 4
+  dim: 1
+  dim: 84
+  dim: 84
+}
+input_shape {
+  dim: 1
+  dim: 18
+}
+
+layer {
+  name: "frames"
+  type: "Flatten"
+  bottom: "frames"
+  top: "frames_flat"
+  flatten_param {
+    axis: 1
+    end_axis: 2
+  }
+}
+
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "frames_flat"
+  top: "conv1"
+  param {
+    name: "conv1_w"
+    decay_mult: 1
+  }
+  param {
+    name: "conv1_b"
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    kernel_size: 8
+    stride: 4
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv1_relu_layer"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "conv1"
+  top: "conv2"
+  param {
+    name: "conv2_w"
+    decay_mult: 1
+  }
+  param {
+    name: "conv2_b"
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv2_relu_layer"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+layer {
+  name: "conv3"
+  type: "Convolution"
+  bottom: "conv2"
+  top: "conv3"
+  param {
+    name: "conv3_w"
+    decay_mult: 1
+  }
+  param {
+    name: "conv3_b"
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv3_relu_layer"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+
+# fully connected layers
+layer {
+  name: "ip1_layer"
+  type: "InnerProduct"
+  bottom: "conv3"
+  top: "ip1"
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+layer {
+  name: "ip1_relu_layer"
+  type: "ReLU"
+  bottom: "ip1"
+  top: "ip1"
+  relu_param {
+    negative_slope: 0.01
+  }
+}
+layer {
+  name: "ip2_layer"
+  type: "InnerProduct"
+  bottom: "ip1"
+  top: "q_values"
+  inner_product_param {
+    num_output: 18
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 1
+    }
+  }
+}
+
+# filter layer leading to loss layer
+layer {
+  name: "eltwise_layer"
+  type: "Eltwise"
+  bottom: "q_values"
+  bottom: "act"
+  top: "filtered_q_values"
+  eltwise_param {
+    operation: PROD
+  }
+}
