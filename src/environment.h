@@ -2,6 +2,11 @@
 #define SRC_ENVIRONMENT_H_
 #include <vector>
 #include <memory>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <gflags/gflags.h>
+#include <glog/logging.h>
 
 namespace fast_dqn {
 
@@ -49,5 +54,8 @@ class Environment {
 // Factory method
 EnvironmentSp CreateEnvironment(bool gui, const std::string rom_path);
 
+void SaveCroppedImage(Environment::FrameDataSp fds, std::string filename);
+
 }  // namespace fast_dqn
+
 #endif  // SRC_ENVIRONMENT_H_

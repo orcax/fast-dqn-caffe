@@ -13,7 +13,7 @@ DEFINE_bool(gpu, true, "Use GPU to brew Caffe");
 DEFINE_int32(gpu_id, 0, "GPU ID");
 DEFINE_bool(gui, false, "Open a GUI window");
 DEFINE_string(rom, "roms/breakout.bin", "Atari 2600 ROM to play");
-DEFINE_string(solver, "models/dqn_solver.prototxt", "Solver parameter"
+DEFINE_string(solver, "models/fast_dqn_solver.prototxt", "Solver parameter"
   "file (*.prototxt)");
 DEFINE_int32(memory, 500000, "Capacity of replay memory");
 DEFINE_int32(explore, 1000000, "Number of iterations needed for epsilon"
@@ -93,6 +93,12 @@ double PlayOneEpisode(
         if (dqn->memory_size() > FLAGS_memory_threshold) {
           dqn->Update();
         }
+
+        // only for test !!!!!
+        //fast_dqn::Environment::FrameDataSp fds = environmentSp->PreprocessScreen();
+        //std::stringstream ss;
+        //ss << "data/" + std::to_string(frame) << ".jpg";
+        //fast_dqn::SaveCroppedImage(fds, ss.str());
       }
     }
   }

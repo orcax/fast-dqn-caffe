@@ -103,7 +103,7 @@ build/dqn -rom ~/roms/pong.bin
 The plot will update every 15 seconds or so, showing a moving average of the game scores.  It also writes ./tran_progress.png which also contains the
 same plot.  If you leave the plotting program running across multiple training sessions the plot will contain previous runs along with the latest run.  This is helpful when trying stuff out.
 
-![plot of training](tran_progress-example.png)
+![plot of training](train_progress-example.png)
 
 In the plot above, three different training runs for pong.bin are shown.  The lines represent a running average of the episode scores.  The blue line is the current training run.  It takes about 15 minutes on a Titan-X with an X99 CPU for results to show up with the current code near episode 30.
 

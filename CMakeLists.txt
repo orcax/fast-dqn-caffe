@@ -18,9 +18,12 @@ set(ALE_LIB libale.so)
 link_directories(./ale)
 include_directories(./ale/src)
 
+# opencv
+set(OPENCV_LIB libopencv_core.so libopencv_imgproc.so libopencv_highgui.so)
+
 add_executable(fast_dqn src/fast_dqn_main.cpp src/fast_dqn.cpp 
   src/ale_environment.cpp)
-target_link_libraries(fast_dqn ${ALE_LIB} ${CAFFE_LIB})
+target_link_libraries(fast_dqn ${ALE_LIB} ${CAFFE_LIB} ${OPENCV_LIB})
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 find_package(Boost 1.40 COMPONENTS filesystem system iostreams regex REQUIRED)

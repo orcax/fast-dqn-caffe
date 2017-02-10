@@ -19450,3 +19450,18 @@ I0210 11:13:38.830224 15437 fast_dqn_main.cpp:173] training score(13528): 15
 I0210 11:14:10.312358 15437 fast_dqn_main.cpp:173] training score(13529): 16
 I0210 11:14:35.265655 15437 fast_dqn_main.cpp:173] training score(13530): 14
 I0210 11:14:48.669473 15437 fast_dqn_main.cpp:173] training score(13531): 4
+I0210 11:15:15.676569 15437 fast_dqn_main.cpp:173] training score(13532): 15
+I0210 11:15:28.753018 15437 solver.cpp:468] Snapshotting to binary proto file model/dqn_iter_4900000.caffemodel
+I0210 11:15:28.781919 15437 solver.cpp:753] Snapshotting solver state to binary proto file model/dqn_iter_4900000.solverstate
+I0210 11:15:28.802594 15437 fast_dqn.cpp:215] Iter 4900000: Updating Clone Net
+I0210 11:15:28.835078 15437 solver.cpp:243] Iteration 4900000, loss = 0.000571977
+I0210 11:15:28.835114 15437 solver.cpp:259]     Train net output #0: loss = 0.000571977 (* 1 = 0.000571977 loss)
+I0210 11:15:28.835120 15437 solver.cpp:590] Iteration 4900000, lr = 0.00025
+I0210 11:15:42.608676 15437 fast_dqn_main.cpp:173] training score(13533): 17
+I0210 11:15:42.608716 15437 fast_dqn_main.cpp:186] epoch(980:4900305): average score 13.9756 in 59.905 hour(s)
+I0210 11:15:42.608722 15437 fast_dqn_main.cpp:194] Estimated Time for 1 million iterations: 12.2248 hours
+I0210 11:16:04.015303 15437 fast_dqn_main.cpp:173] training score(13534): 13
+I0210 11:16:35.065007 15437 fast_dqn_main.cpp:173] training score(13535): 20
+I0210 11:17:04.605404 15437 fast_dqn_main.cpp:173] training score(13536): 18
+I0210 11:17:32.159987 15437 fast_dqn_main.cpp:173] training score(13537): 23
+I0210 11:17:58.588589 15437 fast_dqn_main.cpp:173] training score(13538): 19
