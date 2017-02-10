@@ -43,8 +43,8 @@ CMakeFiles/fast_dqn.dir/src/ale_environment.cpp.o
  ./ale/src/os_dependent/OSystemWin32.hxx
  ./ale/src/os_dependent/SettingsUNIX.hxx
  ./ale/src/os_dependent/SettingsWin32.hxx
- /home/yikun/Workspaces/fast-dqn-caffe/src/ale_environment.cpp
- /home/yikun/Workspaces/fast-dqn-caffe/src/environment.h
+ /home/yx150/Documents/fast-dqn-caffe/src/ale_environment.cpp
+ /home/yx150/Documents/fast-dqn-caffe/src/environment.h
 CMakeFiles/fast_dqn.dir/src/fast_dqn.cpp.o
  ./caffe/include/caffe/blob.hpp
  ./caffe/include/caffe/caffe.hpp
@@ -72,9 +72,9 @@ CMakeFiles/fast_dqn.dir/src/fast_dqn.cpp.o
  ./caffe/include/caffe/util/math_functions.hpp
  ./caffe/include/caffe/util/mkl_alternate.hpp
  ./caffe/include/caffe/vision_layers.hpp
- /home/yikun/Workspaces/fast-dqn-caffe/src/environment.h
- /home/yikun/Workspaces/fast-dqn-caffe/src/fast_dqn.cpp
- /home/yikun/Workspaces/fast-dqn-caffe/src/fast_dqn.h
+ /home/yx150/Documents/fast-dqn-caffe/src/environment.h
+ /home/yx150/Documents/fast-dqn-caffe/src/fast_dqn.cpp
+ /home/yx150/Documents/fast-dqn-caffe/src/fast_dqn.h
  /usr/local/cuda/include/builtin_types.h
  /usr/local/cuda/include/channel_descriptor.h
  /usr/local/cuda/include/common_functions.h
@@ -203,9 +203,9 @@ CMakeFiles/fast_dqn.dir/src/fast_dqn_main.cpp.o
  ./caffe/include/caffe/util/math_functions.hpp
  ./caffe/include/caffe/util/mkl_alternate.hpp
  ./caffe/include/caffe/vision_layers.hpp
- /home/yikun/Workspaces/fast-dqn-caffe/src/environment.h
- /home/yikun/Workspaces/fast-dqn-caffe/src/fast_dqn.h
- /home/yikun/Workspaces/fast-dqn-caffe/src/fast_dqn_main.cpp
+ /home/yx150/Documents/fast-dqn-caffe/src/environment.h
+ /home/yx150/Documents/fast-dqn-caffe/src/fast_dqn.h
+ /home/yx150/Documents/fast-dqn-caffe/src/fast_dqn_main.cpp
  /usr/local/cuda/include/builtin_types.h
  /usr/local/cuda/include/channel_descriptor.h
  /usr/local/cuda/include/common_functions.h

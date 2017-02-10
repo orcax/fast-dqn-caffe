@@ -758,15 +758,15 @@ caffe/neuron_layers.hpp
 caffe/proto/caffe.pb.h
 ./caffe/include/caffe/caffe/proto/caffe.pb.h
 
-/home/yikun/Workspaces/fast-dqn-caffe/src/environment.h
+/home/yx150/Documents/fast-dqn-caffe/src/environment.h
 vector
 -
 memory
 -
 
-/home/yikun/Workspaces/fast-dqn-caffe/src/fast_dqn.h
+/home/yx150/Documents/fast-dqn-caffe/src/fast_dqn.h
 environment.h
-/home/yikun/Workspaces/fast-dqn-caffe/src/environment.h
+/home/yx150/Documents/fast-dqn-caffe/src/environment.h
 caffe/caffe.hpp
 -
 memory
@@ -786,11 +786,11 @@ deque
 string
 -
 
-/home/yikun/Workspaces/fast-dqn-caffe/src/fast_dqn_main.cpp
+/home/yx150/Documents/fast-dqn-caffe/src/fast_dqn_main.cpp
 fast_dqn.h
-/home/yikun/Workspaces/fast-dqn-caffe/src/fast_dqn.h
+/home/yx150/Documents/fast-dqn-caffe/src/fast_dqn.h
 environment.h
-/home/yikun/Workspaces/fast-dqn-caffe/src/environment.h
+/home/yx150/Documents/fast-dqn-caffe/src/environment.h
 ale_interface.hpp
 -
 glog/logging.h

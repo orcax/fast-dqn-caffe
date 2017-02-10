@@ -291,3 +291,33 @@ Linking C executable cmTryCompileExec1834294875
 make[1]: Leaving directory `/home/yikun/Workspaces/fast-dqn-caffe/CMakeFiles/CMakeTmp'
 
 
+Determining if files pthread.h exist passed with the following output:
+Change Dir: /home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1692843517/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1692843517.dir/build.make CMakeFiles/cmTryCompileExec1692843517.dir/build
+make[1]: Entering directory `/home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1692843517.dir/CheckIncludeFiles.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec1692843517.dir/CheckIncludeFiles.c.o   -c /home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp/CheckIncludeFiles.c
+Linking C executable cmTryCompileExec1692843517
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1692843517.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec1692843517.dir/CheckIncludeFiles.c.o  -o cmTryCompileExec1692843517 -rdynamic 
+make[1]: Leaving directory `/home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp'
+
+
+Determining if the function pthread_create exists in the pthread passed with the following output:
+Change Dir: /home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1382859099/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1382859099.dir/build.make CMakeFiles/cmTryCompileExec1382859099.dir/build
+make[1]: Entering directory `/home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1382859099.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec1382859099.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-2.8/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec1382859099
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1382859099.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec1382859099.dir/CheckFunctionExists.c.o  -o cmTryCompileExec1382859099 -rdynamic -lpthread 
+make[1]: Leaving directory `/home/yx150/Documents/fast-dqn-caffe/CMakeFiles/CMakeTmp'
+
+

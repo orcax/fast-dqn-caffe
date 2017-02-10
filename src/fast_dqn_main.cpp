@@ -10,6 +10,7 @@
 
 DEFINE_bool(verbose, false, "verbose output");
 DEFINE_bool(gpu, true, "Use GPU to brew Caffe");
+DEFINE_int32(gpu_id, 0, "GPU ID");
 DEFINE_bool(gui, false, "Open a GUI window");
 DEFINE_string(rom, "roms/breakout.bin", "Atari 2600 ROM to play");
 DEFINE_string(solver, "models/dqn_solver.prototxt", "Solver parameter"
@@ -107,6 +108,7 @@ int main(int argc, char** argv) {
 
   if (FLAGS_gpu) {
     caffe::Caffe::set_mode(caffe::Caffe::GPU);
+    caffe::Caffe::SetDevice(FLAGS_gpu_id);
   } else {
     caffe::Caffe::set_mode(caffe::Caffe::CPU);
   }

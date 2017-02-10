@@ -47,10 +47,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yikun/Workspaces/fast-dqn-caffe
+CMAKE_SOURCE_DIR = /home/yx150/Documents/fast-dqn-caffe
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yikun/Workspaces/fast-dqn-caffe
+CMAKE_BINARY_DIR = /home/yx150/Documents/fast-dqn-caffe
 
 #=============================================================================
 # Target rules for target CMakeFiles/fast_dqn.dir
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/yikun/Workspaces/fast-dqn-caffe
 CMakeFiles/fast_dqn.dir/all:
 	$(MAKE) -f CMakeFiles/fast_dqn.dir/build.make CMakeFiles/fast_dqn.dir/depend
 	$(MAKE) -f CMakeFiles/fast_dqn.dir/build.make CMakeFiles/fast_dqn.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/yikun/Workspaces/fast-dqn-caffe/CMakeFiles  1 2 3
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/yx150/Documents/fast-dqn-caffe/CMakeFiles  1 2 3
 	@echo "Built target fast_dqn"
 .PHONY : CMakeFiles/fast_dqn.dir/all
 
@@ -69,9 +69,9 @@ all: CMakeFiles/fast_dqn.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/fast_dqn.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yikun/Workspaces/fast-dqn-caffe/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yx150/Documents/fast-dqn-caffe/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/fast_dqn.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yikun/Workspaces/fast-dqn-caffe/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yx150/Documents/fast-dqn-caffe/CMakeFiles 0
 .PHONY : CMakeFiles/fast_dqn.dir/rule
 
 # Convenience name for target.
