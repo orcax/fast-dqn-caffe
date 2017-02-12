@@ -14,5 +14,5 @@ display: 10000
 #clip_gradients: 1000
 
 # snapshot intermediate results
-snapshot: 100000
+snapshot: 500000
 snapshot_prefix: "model/dqn"

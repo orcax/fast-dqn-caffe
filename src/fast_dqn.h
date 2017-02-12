@@ -141,7 +141,7 @@ class Fast_DQN {
   /**
    * Copy the current training net_ to the target_net_
    */
-    void CloneTrainingNetToTargetNet() { CloneNet(net_); }
+  void CloneTrainingNetToTargetNet() { CloneNet(net_); }
 
   /**
    * Return the current iteration of the solver

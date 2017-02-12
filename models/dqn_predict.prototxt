@@ -1,17 +1,12 @@
 name: "Deep Q-Network"
 
 input: "frames"
-input: "act"
 input_shape {
   dim: 1
   dim: 4
   dim: 1
   dim: 84
   dim: 84
-}
-input_shape {
-  dim: 1
-  dim: 18
 }
 
 layer {
@@ -174,14 +169,3 @@ layer {
   }
 }
 
-# filter layer leading to loss layer
-layer {
-  name: "eltwise_layer"
-  type: "Eltwise"
-  bottom: "q_values"
-  bottom: "act"
-  top: "filtered_q_values"
-  eltwise_param {
-    operation: PROD
-  }
-}

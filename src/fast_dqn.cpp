@@ -69,6 +69,7 @@ void HasBlobSize(caffe::Net<Dtype>& net,
 
 void Fast_DQN::LoadTrainedModel(const std::string& model_bin) {
   net_->CopyTrainedLayersFrom(model_bin);
+  CloneTrainingNetToTargetNet();
 }
 
 void Fast_DQN::Initialize() {
@@ -195,6 +196,12 @@ std::vector<ActionValue> Fast_DQN::SelectActionGreedily(
             q_values.begin(),
             std::max_element(q_values.begin(), q_values.end()));
     results.emplace_back(legal_actions_[max_idx], q_values[max_idx]);
+
+    // for test
+    //for(int z=0;z<q_values.size();++z) {
+    //  std::cout << q_values[z] << " ";
+    //}
+    //std::cout << " -> " << max_idx << std::endl;
   }
   return results;
 }
@@ -273,6 +280,15 @@ void Fast_DQN::Update() {
     }
   }
   InputDataIntoLayers(net_, frames_input, target_input, filter_input);
+
+  // for test
+  //BlobSp blob_frame = net_->blob_by_name("frames");
+  //const float* frame_data = blob_frame->cpu_data();
+  //for(int z=0;z<84*84;++z) {
+  //  std::cout << frame_data[z] << " ";
+  //}
+  //std::cout << std::endl;
+
   solver_->Step(1);
   // Log the first parameter of each hidden layer
 //   VLOG(1) << "conv1:" <<

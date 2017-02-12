@@ -13,7 +13,7 @@ DEFINE_bool(gpu, true, "Use GPU to brew Caffe");
 DEFINE_int32(gpu_id, 0, "GPU ID");
 DEFINE_bool(gui, false, "Open a GUI window");
 DEFINE_string(rom, "roms/breakout.bin", "Atari 2600 ROM to play");
-DEFINE_string(solver, "models/fast_dqn_solver.prototxt", "Solver parameter"
+DEFINE_string(solver, "models/dqn_solver.prototxt", "Solver parameter"
   "file (*.prototxt)");
 DEFINE_int32(memory, 500000, "Capacity of replay memory");
 DEFINE_int32(explore, 1000000, "Number of iterations needed for epsilon"
@@ -23,11 +23,10 @@ DEFINE_int32(memory_threshold, 100, "Enough amount of transitions to start "
   "learning");
 DEFINE_int32(skip_frame, 3, "Number of frames skipped");
 DEFINE_bool(show_frame, false, "Show the current frame in CUI");
+//DEFINE_string(model, "/home/yikun/Workspaces/fast-dqn-caffe/model/dqn_iter_5900000.caffemodel", "Model file to load");
 DEFINE_string(model, "", "Model file to load");
-DEFINE_bool(evaluate, false, "Evaluation mode: only playing a game, no "
-  "updates");
-DEFINE_double(evaluate_with_epsilon, 0.05, "Epsilon value to be used in "
-  "evaluation mode");
+DEFINE_bool(evaluate, false, "Evaluation mode: only playing a game, no updates");
+DEFINE_double(evaluate_with_epsilon, 0.05, "Epsilon value to be used in evaluation mode");
 DEFINE_double(repeat_games, 1, "Number of games played in evaluation mode");
 DEFINE_int32(steps_per_epoch, 5000, "Number of training steps per epoch");
 
@@ -93,13 +92,13 @@ double PlayOneEpisode(
         if (dqn->memory_size() > FLAGS_memory_threshold) {
           dqn->Update();
         }
-
-        // only for test !!!!!
-        //fast_dqn::Environment::FrameDataSp fds = environmentSp->PreprocessScreen();
-        //std::stringstream ss;
-        //ss << "data/" + std::to_string(frame) << ".jpg";
-        //fast_dqn::SaveCroppedImage(fds, ss.str());
       }
+
+      // only for test !!!!!
+      //fast_dqn::Environment::FrameDataSp fds = environmentSp->PreprocessScreen();
+      //std::stringstream ss;
+      //ss << "data/" + std::to_string(frame) << ".jpg";
+      //fast_dqn::SaveCroppedImage(fds, ss.str());
     }
   }
   environmentSp->Reset();
@@ -134,10 +133,11 @@ int main(int argc, char** argv) {
   if (!FLAGS_model.empty()) {
     // Just evaluate the given trained model
     LOG(INFO) << "Loading " << FLAGS_model;
+    dqn.LoadTrainedModel(FLAGS_model);
   }
 
   if (FLAGS_evaluate) {
-    dqn.LoadTrainedModel(FLAGS_model);
+    //dqn.LoadTrainedModel(FLAGS_model);
     auto total_score = 0.0;
     for (auto i = 0; i < FLAGS_repeat_games; ++i) {
       LOG(INFO) << "game: ";
@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
   double running_average = 0.0;
   double plot_average_discount = 0.05;
 
-  std::ofstream training_data(".//training_log.csv");
+  std::ofstream training_data("./training_log.csv");
   training_data << FLAGS_rom << "," << FLAGS_steps_per_epoch
     << ",,," << std::endl;
   training_data << "Epoch,Epoch avg score,Hours training,Number of episodes"
