@@ -2,13 +2,16 @@ cmake/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
+Makefile
 
 model/
 model-v1/
+model-v2/
 training_log.csv
 train.log
 data/
 fast_dqn
 .ycm_extra_conf.py
+.gdb_history
 
 .*.swp

@@ -9825,3 +9825,5 @@ I0212 13:03:22.125578 59544 fast_dqn_main.cpp:179] training score(6136): 15
 I0212 13:03:40.069051 59544 fast_dqn_main.cpp:179] training score(6137): 7
 I0212 13:04:15.825156 59544 fast_dqn_main.cpp:179] training score(6138): 21
 I0212 13:04:42.175662 59544 fast_dqn_main.cpp:179] training score(6139): 11
+I0212 13:05:11.357825 59544 fast_dqn_main.cpp:179] training score(6140): 13
+I0212 13:05:36.622335 59544 fast_dqn_main.cpp:179] training score(6141): 12
