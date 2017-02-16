@@ -11,7 +11,7 @@ fast_dqn
 .ycm_extra_conf.py
 .gdb_history
 
-.*.swp
+src/.*.swp
 
 model/
 breakout-model-v1/
