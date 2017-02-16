@@ -45,42 +45,64 @@ double CalculateEpsilon(const int iter) {
 double PlayOneEpisode(fast_dqn::EnvironmentSp environmentSp,
     fast_dqn::Fast_DQN* dqn, const double epsilon, const std::string dir) {
   assert(!environmentSp->EpisodeOver());
+
+  // prepare action mapping
+  const auto actions = environmentSp->GetMinimalActionSet();
+  std::vector<int> act2idx(actions.size(), 0);
+  for(int i=0;i<actions.size();++i) act2idx[actions[i]] = i;
+  
   std::deque<fast_dqn::FrameDataSp> past_frames;
+  std::vector<int> acts;
+  std::vector<int> acts_idx;
+  std::vector<int> rewards;
   auto total_score = 0.0;
   for (auto frame = 0; !environmentSp->EpisodeOver(); ++frame) {
-    if (FLAGS_verbose)
-      LOG(INFO) << "frame: " << frame;
+    // get current frame
     const auto current_frame = environmentSp->PreprocessScreen();
-//     if (FLAGS_show_frame) {
-//       std::cout << fast_dqn::DrawFrame(*current_frame);
-//     }
     past_frames.push_back(current_frame);
-    if (past_frames.size() < fast_dqn::kInputFrameCount) {
-      // If there are not past frames enough for DQN input, just select NOOP
-      environmentSp->ActNoop();
-    } else {
+
+    // take action
+    int act;
+    if(frame < fast_dqn::kInputFrameCount) {
+      act = 0;
+    }
+    else {
       if (past_frames.size() > fast_dqn::kInputFrameCount) {
         past_frames.pop_front();
       }
       fast_dqn::State input_frames;
       std::copy(past_frames.begin(), past_frames.end(), input_frames.begin());
-      const auto action = dqn->SelectAction(input_frames, epsilon);
-
-      auto immediate_score = environmentSp->Act(action);
-      total_score += immediate_score;
-
-      // Rewards for DQN are normalized as follows:
-      // 1 for any positive score, -1 for any negative score, otherwise 0
-      auto reward = immediate_score;
-
-      // save images
-      std::stringstream ss;
-      ss << dir << "/" << std::setw(5) << std::setfill('0') << frame << ".jpg";
-      fast_dqn::Environment::FrameDataSp fds = environmentSp->PreprocessScreen();
-      fast_dqn::SaveCroppedImage(fds, ss.str());
+      act = dqn->SelectAction(input_frames, epsilon);
     }
+    auto reward = environmentSp->Act(act);
+    total_score += reward;
+    
+    // save image
+    std::stringstream ss;
+    ss << dir << "/" << std::setw(5) << std::setfill('0') << frame << ".jpg";
+    fast_dqn::SaveCroppedImage(current_frame, ss.str());
+
+    // save action and reward
+    acts.push_back(act);
+    acts_idx.push_back(act2idx[act]);
+    rewards.push_back(reward);
   }
-  environmentSp->Reset();
+
+  std::ofstream act_file;
+  act_file.open(dir + "/act.log");
+  for(int i=0;i<acts.size();++i) act_file << acts[i] << "\n";
+  act_file.close();
+
+  std::ofstream act_idx_file;
+  act_idx_file.open(dir + "/act_idx.log");
+  for(int i=0;i<acts_idx.size();++i) act_idx_file << acts_idx[i] << "\n";
+  act_idx_file.close();
+
+  std::ofstream reward_file;
+  reward_file.open(dir + "/reward.log");
+  for(int i=0;i<rewards.size();++i) reward_file << rewards[i] << "\n";
+  reward_file.close();
+
   return total_score;
 }
 
@@ -129,10 +151,10 @@ int main(int argc, char** argv) {
     ss << std::setw(4) << std::setfill('0') << ep;
     mkdir(ss.str());
     const auto score = PlayOneEpisode(environmentSp, &dqn, FLAGS_evaluate_with_epsilon, ss.str());
+    environmentSp->Reset();
 
     LOG(INFO) << "score: " << score;
     total_score += score;
-    environmentSp->Reset();
   }
   LOG(INFO) << "average score: " << total_score / FLAGS_repeat_games;
 

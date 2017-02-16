@@ -25,11 +25,9 @@ class Environment {
   static constexpr auto kRawFrameHeight = 250;
   static constexpr auto kRawFrameWidth = 160;
   static constexpr auto kCroppedFrameSize = 84;
-  static constexpr auto kCroppedFrameDataSize = 
-    kCroppedFrameSize * kCroppedFrameSize;
+  static constexpr auto kCroppedFrameDataSize = kCroppedFrameSize * kCroppedFrameSize;
   static constexpr auto kInputFrameCount = 4;
-  static constexpr auto kInputDataSize = 
-    kCroppedFrameDataSize * kInputFrameCount;
+  static constexpr auto kInputDataSize = kCroppedFrameDataSize * kInputFrameCount;
 
   using FrameData = std::array<uint8_t, kCroppedFrameDataSize>;
   using FrameDataSp = std::shared_ptr<FrameData>;
