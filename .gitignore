@@ -4,9 +4,6 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 
-model/
-model-v1/
-model-v2/
 training_log.csv
 train.log
 data/
@@ -15,3 +12,6 @@ fast_dqn
 .gdb_history
 
 .*.swp
+
+model/
+breakout-model-v1/
