@@ -21,27 +21,40 @@ include_directories(./ale/src)
 # opencv
 set(OPENCV_LIB libopencv_core.so libopencv_imgproc.so libopencv_highgui.so)
 
-add_executable(fast_dqn src/fast_dqn_main.cpp src/fast_dqn.cpp 
+add_executable(fast_dqn 
+  src/fast_dqn_main.cpp 
+  src/fast_dqn.cpp 
   src/ale_environment.cpp)
 target_link_libraries(fast_dqn ${ALE_LIB} ${CAFFE_LIB} ${OPENCV_LIB})
+
+add_executable(data_gen
+  src/data_generator.cpp
+  src/fast_dqn.cpp
+  src/ale_environment.cpp)
+target_link_libraries(data_gen ${ALE_LIB} ${CAFFE_LIB} ${OPENCV_LIB})
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 find_package(Boost 1.40 COMPONENTS filesystem system iostreams regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
-target_link_libraries(fast_dqn ${Boost_LIBRARIES} ${XITARI_LIB} caffe)
+target_link_libraries(fast_dqn ${Boost_LIBRARIES})
+target_link_libraries(data_gen ${Boost_LIBRARIES})
 
 find_package(GFLAGS REQUIRED)
 include_directories(${GFLAGS_INCLUDE_DIR})
 target_link_libraries(fast_dqn ${GFLAGS_LIBRARY})
+target_link_libraries(data_gen ${GFLAGS_LIBRARY})
 
 find_package(GLOG REQUIRED)
 include_directories(${GLOG_INCLUDE_DIRS})
 target_link_libraries(fast_dqn ${GLOG_LIBRARIES})
+target_link_libraries(data_gen ${GLOG_LIBRARIES})
 
 include(FindProtobuf)
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 target_link_libraries(fast_dqn ${PROTOBUF_LIBRARIES})
+target_link_libraries(data_gen ${PROTOBUF_LIBRARIES})
 
 find_package(HDF5 COMPONENTS HL QUIET)
 include_directories(SYSTEM ${HDF5_INCLUDE_DIRS} ${HDF5_HL_INCLUDE_DIR})

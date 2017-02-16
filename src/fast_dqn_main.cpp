@@ -23,9 +23,9 @@ DEFINE_int32(memory_threshold, 100, "Enough amount of transitions to start "
   "learning");
 DEFINE_int32(skip_frame, 3, "Number of frames skipped");
 DEFINE_bool(show_frame, false, "Show the current frame in CUI");
-//DEFINE_string(model, "/home/yikun/Workspaces/fast-dqn-caffe/model/dqn_iter_5900000.caffemodel", "Model file to load");
-DEFINE_string(model, "", "Model file to load");
-DEFINE_bool(evaluate, false, "Evaluation mode: only playing a game, no updates");
+DEFINE_string(model, "model/dqn_iter_2500000.caffemodel", "Model file to load");
+//DEFINE_string(model, "", "Model file to load");
+DEFINE_bool(evaluate, true, "Evaluation mode: only playing a game, no updates");
 DEFINE_double(evaluate_with_epsilon, 0.05, "Epsilon value to be used in evaluation mode");
 DEFINE_double(repeat_games, 1, "Number of games played in evaluation mode");
 DEFINE_int32(steps_per_epoch, 5000, "Number of training steps per epoch");
@@ -74,11 +74,10 @@ double PlayOneEpisode(
 
       // Rewards for DQN are normalized as follows:
       // 1 for any positive score, -1 for any negative score, otherwise 0
-      const auto reward =
-          immediate_score == 0 ?
-              0 :
-              immediate_score /= std::abs(immediate_score);
+      auto reward = immediate_score;
       if (update) {
+        reward = immediate_score == 0 ? 0 : immediate_score /= std::abs(immediate_score);
+
         // Add the current transition to replay memory
         const auto transition = environmentSp->EpisodeOver() ?
             fast_dqn::Transition(input_frames, action, reward, nullptr) :

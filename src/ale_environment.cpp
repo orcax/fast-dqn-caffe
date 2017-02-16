@@ -149,7 +149,7 @@ EnvironmentSp CreateEnvironment(
 }
 
 void SaveCroppedImage(Environment::FrameDataSp fds, std::string filename) {
-  std::cout << "Saving " << filename << std::endl;
+  //std::cout << "Saving " << filename << std::endl;
   const int height = Environment::kCroppedFrameSize, width = Environment::kCroppedFrameSize;
   const int size = height * width;
   CHECK_EQ(size, fds->size());
@@ -157,10 +157,10 @@ void SaveCroppedImage(Environment::FrameDataSp fds, std::string filename) {
   for(int i=0;i<size;++i) {
     int row = i / width, col = i % width;
     float gray = fds->at(i);// / 255.0;
-    std::cout << gray << " ";
+    //std::cout << gray << " ";
     gray_image.at<float>(row, col) = gray;
   }
-  std::cout << std::endl;
+  //std::cout << std::endl;
   cv::imwrite(filename, gray_image);
 }
 

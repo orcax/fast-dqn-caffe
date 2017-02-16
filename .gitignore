@@ -6,12 +6,16 @@ Makefile
 
 training_log.csv
 train.log
-data/
 fast_dqn
+data_gen
 .ycm_extra_conf.py
+.ycm_extra_conf.pyc
 .gdb_history
 
+.*.swp
 src/.*.swp
 
 model/
+model-v2/
 breakout-model-v1/
+data/
