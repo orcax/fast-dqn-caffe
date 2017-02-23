@@ -47,12 +47,12 @@ double PlayOneEpisode(fast_dqn::EnvironmentSp environmentSp,
   assert(!environmentSp->EpisodeOver());
 
   // prepare action mapping
-  const auto actions = environmentSp->GetMinimalActionSet();
-  std::vector<int> act2idx(actions.size(), 0);
-  for(int i=0;i<actions.size();++i) act2idx[actions[i]] = i;
+  const int num_acts = environmentSp->num_acts();
+  //std::vector<int> act2idx(actions.size(), 0);
+  //for(int i=0;i<actions.size();++i) act2idx[actions[i]] = i;
   
   std::deque<fast_dqn::FrameDataSp> past_frames;
-  std::vector<int> acts;
+  //std::vector<int> acts;
   std::vector<int> acts_idx;
   std::vector<int> rewards;
   auto total_score = 0.0;
@@ -62,9 +62,9 @@ double PlayOneEpisode(fast_dqn::EnvironmentSp environmentSp,
     past_frames.push_back(current_frame);
 
     // take action
-    int act;
+    int act_idx;
     if(frame < fast_dqn::kInputFrameCount) {
-      act = 0;
+      act_idx = 0;
     }
     else {
       if (past_frames.size() > fast_dqn::kInputFrameCount) {
@@ -72,9 +72,9 @@ double PlayOneEpisode(fast_dqn::EnvironmentSp environmentSp,
       }
       fast_dqn::State input_frames;
       std::copy(past_frames.begin(), past_frames.end(), input_frames.begin());
-      act = dqn->SelectAction(input_frames, epsilon);
+      act_idx = dqn->SelectAction(input_frames, epsilon);
     }
-    auto reward = environmentSp->Act(act);
+    auto reward = environmentSp->Act(act_idx);
     total_score += reward;
     
     // save image
@@ -83,15 +83,15 @@ double PlayOneEpisode(fast_dqn::EnvironmentSp environmentSp,
     fast_dqn::SaveCroppedImage(current_frame, ss.str());
 
     // save action and reward
-    acts.push_back(act);
-    acts_idx.push_back(act2idx[act]);
+    //acts.push_back(act);
+    acts_idx.push_back(act_idx);
     rewards.push_back(reward);
   }
 
-  std::ofstream act_file;
-  act_file.open(dir + "/act.log");
-  for(int i=0;i<acts.size();++i) act_file << acts[i] << "\n";
-  act_file.close();
+  //std::ofstream act_file;
+  //act_file.open(dir + "/act.log");
+  //for(int i=0;i<acts.size();++i) act_file << acts[i] << "\n";
+  //act_file.close();
 
   std::ofstream act_idx_file;
   act_idx_file.open(dir + "/act_idx.log");
@@ -123,7 +123,10 @@ int main(int argc, char** argv) {
   fast_dqn::EnvironmentSp environmentSp = fast_dqn::CreateEnvironment(FLAGS_gui, rom);
 
   // Get the vector of legal actions
-  const fast_dqn::Environment::ActionVec legal_actions = environmentSp->GetMinimalActionSet();
+  //const fast_dqn::Environment::ActionVec legal_actions = environmentSp->GetMinimalActionSet();
+  const int num_acts = environmentSp->num_acts();
+  std::vector<int> legal_actions; // action indices
+  for(int i=0;i<num_acts;++i) legal_actions.push_back(i);
 
   fast_dqn::Fast_DQN dqn(environmentSp, legal_actions, FLAGS_solver,
       FLAGS_memory, FLAGS_gamma, FLAGS_verbose);

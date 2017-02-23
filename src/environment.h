@@ -37,15 +37,18 @@ class Environment {
 
   virtual double ActNoop() = 0;
 
-  virtual double Act(int action) = 0;
+  //virtual double Act(int Action) = 0;
+  virtual double Act(int act_idx) = 0;
 
   virtual void Reset() = 0;
 
   virtual bool EpisodeOver() = 0;
 
-  virtual std::string action_to_string(ActionCode a) = 0;
+  //virtual std::string action_to_string(ActionCode a) = 0;
+  virtual std::string action_to_string(int act_idx) = 0;
 
-  virtual const ActionVec& GetMinimalActionSet() = 0;
+  //virtual const ActionVec& GetMinimalActionSet() = 0;
+  virtual const int num_acts() = 0; // return number of actions
 
 };
 

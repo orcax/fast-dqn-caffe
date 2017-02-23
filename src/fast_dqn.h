@@ -47,6 +47,13 @@ using TargetLayerInputData = std::array<float, kMinibatchSize * kOutputCount>;
 using FilterLayerInputData = std::array<float, kMinibatchSize * kOutputCount>;
 
 
+//typedef struct ActionValue {
+//  ActionValue(const Environment::ActionCode _action, const float _q_value) : 
+//    action(_action), q_value(_q_value) {
+//    }
+//  const Environment::ActionCode action;
+//  const float q_value;
+//} ActionValue;
 typedef struct ActionValue {
   ActionValue(const Environment::ActionCode _action, const float _q_value) : 
     action(_action), q_value(_q_value) {

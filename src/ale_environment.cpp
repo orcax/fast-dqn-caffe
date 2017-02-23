@@ -15,9 +15,11 @@ public:
     ale_.setBool("display_screen", gui);
     ale_.loadROM(rom_path);
 
-    ActionVect av = ale_.getMinimalActionSet();
-    for (int i=0; i < av.size(); i++)
-      legal_actions_.push_back(static_cast<ActionCode>(av[i]));
+    //ActionVect av = ale_.getMinimalActionSet();
+    //for (int i=0; i < av.size(); i++) {
+    //  legal_actions_.push_back(static_cast<ActionCode>(av[i]));
+    //}
+    acts_ = ale_.getMinimalActionSet();
   }
 
   FrameDataSp PreprocessScreen() {
@@ -107,15 +109,17 @@ public:
   double ActNoop() {
     double reward = 0;
       for (auto i = 0; i < kInputFrameCount && !ale_.game_over(); ++i) {
-        reward += ale_.act(PLAYER_A_NOOP);
+        Action a = acts_[0];
+        reward += ale_.act(a);
       }
     return reward;
   }
 
-  double Act(int action) {
+  double Act(int act_idx) {
     double reward = 0;
       for (auto i = 0; i < kInputFrameCount && !ale_.game_over(); ++i) {
-        reward += ale_.act((Action)action);
+        Action a = acts_[act_idx];
+        reward += ale_.act(a);
       }
     return reward;
   }
@@ -128,19 +132,24 @@ public:
     return ale_.game_over(); 
   }
 
-  std::string action_to_string(Environment::ActionCode a) { 
-    return action_to_string(static_cast<Action>(a)); 
+  std::string action_to_string(int act_idx) { 
+    Action a = acts_[act_idx];
+    return action_to_string(a); 
   }
 
-  const ActionVec& GetMinimalActionSet() {
-    return legal_actions_;
+  //const ActionVec& GetMinimalActionSet() {
+  //  return legal_actions_;
+  //}
+  
+  const int num_acts() {
+    return acts_.size();
   }
 
  private:
 
   ALEInterface ale_;
-  ActionVec legal_actions_;
-  
+  //ActionVec legal_actions_;
+  std::vector<Action> acts_;
 };
 
 EnvironmentSp CreateEnvironment(

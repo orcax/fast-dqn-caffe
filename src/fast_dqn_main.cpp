@@ -23,9 +23,9 @@ DEFINE_int32(memory_threshold, 100, "Enough amount of transitions to start "
   "learning");
 DEFINE_int32(skip_frame, 3, "Number of frames skipped");
 DEFINE_bool(show_frame, false, "Show the current frame in CUI");
-DEFINE_string(model, "model/dqn_iter_2500000.caffemodel", "Model file to load");
-//DEFINE_string(model, "", "Model file to load");
-DEFINE_bool(evaluate, true, "Evaluation mode: only playing a game, no updates");
+//DEFINE_string(model, "model/dqn_iter_2500000.caffemodel", "Model file to load");
+DEFINE_string(model, "", "Model file to load");
+DEFINE_bool(evaluate, false, "Evaluation mode: only playing a game, no updates");
 DEFINE_double(evaluate_with_epsilon, 0.05, "Epsilon value to be used in evaluation mode");
 DEFINE_double(repeat_games, 1, "Number of games played in evaluation mode");
 DEFINE_int32(steps_per_epoch, 5000, "Number of training steps per epoch");
@@ -66,9 +66,9 @@ double PlayOneEpisode(
       }
       fast_dqn::State input_frames;
       std::copy(past_frames.begin(), past_frames.end(), input_frames.begin());
-      const auto action = dqn->SelectAction(input_frames, epsilon);
+      const auto act_idx = dqn->SelectAction(input_frames, epsilon);
 
-      auto immediate_score = environmentSp->Act(action);
+      auto immediate_score = environmentSp->Act(act_idx);
       total_score += immediate_score;
 
 
@@ -80,12 +80,8 @@ double PlayOneEpisode(
 
         // Add the current transition to replay memory
         const auto transition = environmentSp->EpisodeOver() ?
-            fast_dqn::Transition(input_frames, action, reward, nullptr) :
-            fast_dqn::Transition(
-                input_frames,
-                action,
-                reward,
-                environmentSp->PreprocessScreen());
+            fast_dqn::Transition(input_frames, act_idx, reward, nullptr) :
+            fast_dqn::Transition(input_frames, act_idx, reward, environmentSp->PreprocessScreen());
         dqn->AddTransition(transition);
         // If the size of replay memory is enough, update DQN
         if (dqn->memory_size() > FLAGS_memory_threshold) {
@@ -117,12 +113,13 @@ int main(int argc, char** argv) {
     caffe::Caffe::set_mode(caffe::Caffe::CPU);
   }
 
-  fast_dqn::EnvironmentSp environmentSp =
-    fast_dqn::CreateEnvironment(FLAGS_gui, FLAGS_rom);
+  fast_dqn::EnvironmentSp environmentSp = fast_dqn::CreateEnvironment(FLAGS_gui, FLAGS_rom);
 
   // Get the vector of legal actions
-  const fast_dqn::Environment::ActionVec legal_actions = 
-    environmentSp->GetMinimalActionSet();
+  //const fast_dqn::Environment::ActionVec legal_actions = environmentSp->GetMinimalActionSet();
+  const int num_acts = environmentSp->num_acts();
+  std::vector<int> legal_actions; // action indices
+  for(int i=0;i<num_acts;++i) legal_actions.push_back(i);
 
   fast_dqn::Fast_DQN dqn(environmentSp, legal_actions, FLAGS_solver, 
                          FLAGS_memory, FLAGS_gamma, FLAGS_verbose);
