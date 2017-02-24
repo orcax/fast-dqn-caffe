@@ -38,18 +38,24 @@ double CalculateEpsilon(const int iter) {
   }
 }
 
+typedef struct Result {
+  Result(double score, long frames) {
+    score_ = score;
+    frames_ = frames;
+  }
+  double score_;
+  long frames_;
+} Result;
+
 /**
  * Play one episode and return the total score
  */
-double PlayOneEpisode(
-    fast_dqn::EnvironmentSp environmentSp,
-    fast_dqn::Fast_DQN* dqn,
-    const double epsilon,
-    const bool update) {
+Result PlayOneEpisode(fast_dqn::EnvironmentSp environmentSp, fast_dqn::Fast_DQN* dqn, const double epsilon, const bool update) {
   assert(!environmentSp->EpisodeOver());
   std::deque<fast_dqn::FrameDataSp> past_frames;
   auto total_score = 0.0;
-  for (auto frame = 0; !environmentSp->EpisodeOver(); ++frame) {
+  auto frame = 0;
+  for (; !environmentSp->EpisodeOver(); ++frame) {
     if (FLAGS_verbose)
       LOG(INFO) << "frame: " << frame;
     const auto current_frame = environmentSp->PreprocessScreen();
@@ -97,7 +103,7 @@ double PlayOneEpisode(
     }
   }
   environmentSp->Reset();
-  return total_score;
+  return Result(total_score, frame);
 }
 
 int main(int argc, char** argv) {
@@ -121,8 +127,7 @@ int main(int argc, char** argv) {
   std::vector<int> legal_actions; // action indices
   for(int i=0;i<num_acts;++i) legal_actions.push_back(i);
 
-  fast_dqn::Fast_DQN dqn(environmentSp, legal_actions, FLAGS_solver, 
-                         FLAGS_memory, FLAGS_gamma, FLAGS_verbose);
+  fast_dqn::Fast_DQN dqn(environmentSp, legal_actions, FLAGS_solver, FLAGS_memory, FLAGS_gamma, FLAGS_verbose);
 
   dqn.Initialize();
 
@@ -137,10 +142,9 @@ int main(int argc, char** argv) {
     auto total_score = 0.0;
     for (auto i = 0; i < FLAGS_repeat_games; ++i) {
       LOG(INFO) << "game: ";
-      const auto score =
-          PlayOneEpisode(environmentSp, &dqn, FLAGS_evaluate_with_epsilon, false);
-      LOG(INFO) << "score: " << score;
-      total_score += score;
+      const Result res = PlayOneEpisode(environmentSp, &dqn, FLAGS_evaluate_with_epsilon, false);
+      LOG(INFO) << "score: " << res.score_;
+      total_score += res.score_;
     }
     LOG(INFO) << "total_score: " << total_score;
     return 0;
@@ -153,12 +157,12 @@ int main(int argc, char** argv) {
   int next_epoch_boundry = FLAGS_steps_per_epoch;
   double running_average = 0.0;
   double plot_average_discount = 0.05;
+  long total_frames = 0;
 
   std::ofstream training_data("./training_log.csv");
   training_data << FLAGS_rom << "," << FLAGS_steps_per_epoch
     << ",,," << std::endl;
-  training_data << "Epoch,Epoch avg score,Hours training,Number of episodes"
-    ",episodes in epoch" << std::endl;
+  training_data << "Epoch,Epoch avg score,Hours training,Number of episodes,Episodes in epoch,Number of frames" << std::endl;
 
 
   for (auto episode = 0;; episode++) {
@@ -167,45 +171,40 @@ int main(int argc, char** argv) {
 
     epoch_episode_count++;
     const auto epsilon = CalculateEpsilon(dqn.current_iteration());
-    auto train_score = PlayOneEpisode(environmentSp, &dqn, epsilon, true);
+    Result res = PlayOneEpisode(environmentSp, &dqn, epsilon, true);
 
-    epoch_total_score += train_score;
-    if (dqn.current_iteration() > 0)  // started training?
+    epoch_total_score += res.score_;
+    total_frames += res.frames_;
+    if (dqn.current_iteration() > 0) {  // started training?
       total_time += run_timer.MilliSeconds();
-    LOG(INFO) << "training score(" << episode << "): "
-      << train_score << std::endl;
+    }
+    LOG(INFO) << "training score(" << episode << "): " << res.score_ << std::endl;
 
-    if (episode == 0)
-      running_average = train_score;
-    else
-      running_average = train_score*plot_average_discount
-        + running_average*(1.0-plot_average_discount);
+    if (episode == 0) {
+      running_average = res.score_;
+    }
+    else {
+      running_average = res.score_ * plot_average_discount + running_average * (1.0 - plot_average_discount);
+    }
 
     if (dqn.current_iteration() >= next_epoch_boundry) {   
       double hours =  total_time / 1000. / 3600.;
-      int epoc_number = static_cast<int>(
-        (next_epoch_boundry)/FLAGS_steps_per_epoch);
-      LOG(INFO) << "epoch(" << epoc_number
-        << ":" << dqn.current_iteration() << "): "
-        << "average score " << running_average << " in "
-        << hours << " hour(s)";
+      int epoc_number = static_cast<int>((next_epoch_boundry)/FLAGS_steps_per_epoch);
+      LOG(INFO) << "epoch(" << epoc_number << ":" << dqn.current_iteration() << "): " << "average score " << running_average << " in " << hours << " hour(s)";
 
       if (dqn.current_iteration()) {
-        auto hours_for_million = hours/(
-          dqn.current_iteration()/1000000.0);
-        LOG(INFO) << "Estimated Time for 1 million iterations: "
-          << hours_for_million
-          << " hours";
+        auto hours_for_million = hours / (dqn.current_iteration()/1000000.0);
+        LOG(INFO) << "Estimated Time for 1 million iterations: " << hours_for_million << " hours";
       }
 
-      training_data << epoc_number << ", " << running_average << ", " << hours
-        << ", " << episode << ", " << epoch_episode_count << std::endl;
+      training_data << epoc_number << ", " << running_average << ", " << hours << ", " << episode << ", " << epoch_episode_count << "," << total_frames << std::endl;
 
       epoch_total_score = 0.0;
       epoch_episode_count = 0;
 
-      while (next_epoch_boundry < dqn.current_iteration())
+      while (next_epoch_boundry < dqn.current_iteration()) {
         next_epoch_boundry += FLAGS_steps_per_epoch;
+      }
     }
   }
 
