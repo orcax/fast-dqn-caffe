@@ -23,7 +23,7 @@ DEFINE_int32(memory_threshold, 100, "Enough amount of transitions to start "
   "learning");
 DEFINE_int32(skip_frame, 3, "Number of frames skipped");
 DEFINE_bool(show_frame, false, "Show the current frame in CUI");
-//DEFINE_string(model, "model/dqn_iter_2500000.caffemodel", "Model file to load");
+//DEFINE_string(model, "breakout-model-v1/dqn_iter_2500000.caffemodel", "Model file to load");
 DEFINE_string(model, "", "Model file to load");
 DEFINE_bool(evaluate, false, "Evaluation mode: only playing a game, no updates");
 DEFINE_double(evaluate_with_epsilon, 0.05, "Epsilon value to be used in evaluation mode");
@@ -55,24 +55,26 @@ Result PlayOneEpisode(fast_dqn::EnvironmentSp environmentSp, fast_dqn::Fast_DQN*
   std::deque<fast_dqn::FrameDataSp> past_frames;
   auto total_score = 0.0;
   auto frame = 0;
-  for (; !environmentSp->EpisodeOver(); ++frame) {
-    if (FLAGS_verbose)
-      LOG(INFO) << "frame: " << frame;
+  while (!environmentSp->EpisodeOver()) {
+    ++frame;
+    //if (FLAGS_verbose) LOG(INFO) << "frame: " << frame;
     const auto current_frame = environmentSp->PreprocessScreen();
-//     if (FLAGS_show_frame) {
-//       std::cout << fast_dqn::DrawFrame(*current_frame);
-//     }
+    //if (FLAGS_show_frame) {
+    //  std::cout << fast_dqn::DrawFrame(*current_frame);
+    //}
     past_frames.push_back(current_frame);
     if (past_frames.size() < fast_dqn::kInputFrameCount) {
       // If there are not past frames enough for DQN input, just select NOOP
       environmentSp->ActNoop();
-    } else {
+    } 
+    else {
       if (past_frames.size() > fast_dqn::kInputFrameCount) {
         past_frames.pop_front();
       }
       fast_dqn::State input_frames;
       std::copy(past_frames.begin(), past_frames.end(), input_frames.begin());
       const auto act_idx = dqn->SelectAction(input_frames, epsilon);
+      //std::cout << act_idx << std::endl;
 
       auto immediate_score = environmentSp->Act(act_idx);
       total_score += immediate_score;
@@ -106,6 +108,15 @@ Result PlayOneEpisode(fast_dqn::EnvironmentSp environmentSp, fast_dqn::Fast_DQN*
   return Result(total_score, frame);
 }
 
+inline int randint(int lower, int upper) {
+  assert(lower < upper);
+  return rand() % (upper - lower) + lower;
+}
+
+inline int randint(int upper) {
+  return randint(0, upper);
+}
+
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);
@@ -127,6 +138,19 @@ int main(int argc, char** argv) {
   std::vector<int> legal_actions; // action indices
   for(int i=0;i<num_acts;++i) legal_actions.push_back(i);
 
+  // for test only
+  //srand(time(NULL));
+  //for(int f=0;!environmentSp->EpisodeOver();++f) {
+  //  int act_idx = randint(num_acts);
+  //  double reward = environmentSp->Act(act_idx);
+  //  std::cout << "step=" << f << " | act_idx=" << act_idx << " | reward=" << reward << std::endl;
+  //  fast_dqn::Environment::FrameDataSp fds = environmentSp->PreprocessScreen();
+  //  std::stringstream ss;
+  //  ss << "data/" + std::to_string(f+1) << ".jpg";
+  //  fast_dqn::SaveCroppedImage(fds, ss.str());
+  //}
+  //return 0;
+
   fast_dqn::Fast_DQN dqn(environmentSp, legal_actions, FLAGS_solver, FLAGS_memory, FLAGS_gamma, FLAGS_verbose);
 
   dqn.Initialize();
@@ -138,7 +162,6 @@ int main(int argc, char** argv) {
   }
 
   if (FLAGS_evaluate) {
-    //dqn.LoadTrainedModel(FLAGS_model);
     auto total_score = 0.0;
     for (auto i = 0; i < FLAGS_repeat_games; ++i) {
       LOG(INFO) << "game: ";

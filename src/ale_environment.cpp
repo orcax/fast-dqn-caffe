@@ -117,10 +117,10 @@ public:
 
   double Act(int act_idx) {
     double reward = 0;
-      for (auto i = 0; i < kInputFrameCount && !ale_.game_over(); ++i) {
-        Action a = acts_[act_idx];
-        reward += ale_.act(a);
-      }
+    Action a = acts_[act_idx];
+    for (auto i = 0; i < kInputFrameCount && !ale_.game_over(); ++i) {
+      reward += ale_.act(a);
+    }
     return reward;
   }
 

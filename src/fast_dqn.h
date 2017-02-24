@@ -47,13 +47,6 @@ using TargetLayerInputData = std::array<float, kMinibatchSize * kOutputCount>;
 using FilterLayerInputData = std::array<float, kMinibatchSize * kOutputCount>;
 
 
-//typedef struct ActionValue {
-//  ActionValue(const Environment::ActionCode _action, const float _q_value) : 
-//    action(_action), q_value(_q_value) {
-//    }
-//  const Environment::ActionCode action;
-//  const float q_value;
-//} ActionValue;
 typedef struct ActionValue {
   ActionValue(const Environment::ActionCode _action, const float _q_value) : 
     action(_action), q_value(_q_value) {
@@ -61,7 +54,6 @@ typedef struct ActionValue {
   const Environment::ActionCode action;
   const float q_value;
 } ActionValue;
-
 
 /**
   * Transition
@@ -162,12 +154,9 @@ class Fast_DQN {
   using MemoryDataLayerSp = boost::shared_ptr<caffe::MemoryDataLayer<float>>;
 
 
-  Environment::ActionVec SelectActions(const InputStateBatch& frames_batch,
-                              const double epsilon);
-  ActionValue SelectActionGreedily(NetSp net,
-                                   const State& last_frames);
-  std::vector<ActionValue> SelectActionGreedily(NetSp,
-                                   const InputStateBatch& last_frames);
+  Environment::ActionVec SelectActions(const InputStateBatch& frames_batch, const double epsilon);
+  ActionValue SelectActionGreedily(NetSp net, const State& last_frames);
+  std::vector<ActionValue> SelectActionGreedily(NetSp, const InputStateBatch& last_frames);
 
   /**
     * Clone the given net and store the result in clone_net_
@@ -189,7 +178,7 @@ class Fast_DQN {
       const FilterLayerInputData& filter_data);
 
   EnvironmentSp environmentSp_;
-  const Environment::ActionVec legal_actions_;
+  const std::vector<int> legal_actions_; // action indices
   const int replay_memory_capacity_;
   const double gamma_;
   std::deque<Transition> replay_memory_;
